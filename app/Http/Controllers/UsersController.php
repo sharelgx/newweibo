@@ -26,7 +26,10 @@ class UsersController extends Controller
         return view('users.create');
     }
     public function show(User $user){
-        return view('users.show', compact('user'));
+        $statuses = $user->statuses()
+                        ->orderBy('created_at', 'desc')
+                        ->paginate(10);
+        return view('users.show', compact('user', 'statuses'));
     }
     public function store(Request $request){
         //验证并注册
@@ -35,7 +38,6 @@ class UsersController extends Controller
             'email'=> 'required|email|unique:users|max:255',
             'password' => 'required|confirmed|min:6'
         ]);
-
         
         $user = User::create([
             'name' => $request->name,
